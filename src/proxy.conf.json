@@ -1,0 +1,7 @@
+{
+    "/HSIL_SOAP_API/*": {
+        "target": "http://fast.org.in:8080",
+        "secure": false,
+        "logLevel": "debug"
+    }
+}

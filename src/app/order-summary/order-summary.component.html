@@ -1,0 +1,294 @@
+<div class="desktopShow text-center text-danger">
+  <h1><i>! This is only mobile view sites.</i></h1>
+</div>
+<div class="container-fluid mobileShow" *ngIf="summaryDetails">
+<!-- <div class="container-fluid" *ngIf="summaryDetails">  -->
+  <div class="row mobileShowFont" *ngIf="isShowProgressBar">
+    <div class="col-sm-12" style="margin: 10px 0px">
+      <h5 class="text-danger text-center">Please wait...</h5>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+  </div>
+  <div class="row mobileShowFont">
+    <div class="col-sm-2">
+      <label>From date</label>
+      <input type="date" class="form-control" [(ngModel)]="fromDate"/>
+    </div>
+    <div class="col-sm-2">
+      <label>To date</label>
+      <input type="date" class="form-control" [(ngModel)]="toDate"/>
+    </div>
+    <div class="col-sm-3">
+      <label>Territory Code</label>
+      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="territoryCodeList"
+      [(ngModel)]="selectedTerritoryCodeList" [settings]="singleSelectdropdownSettings"
+      (onSelect)="onSelectOrDeselectTerritoryCode($event)" (onDeSelect)="onSelectOrDeselectTerritoryCode($event)">
+      </ng-multiselect-dropdown>
+    </div>
+    <!-- <div class="col-sm-3">
+      <label>Dealer Code</label>
+      <ng-multiselect-dropdown [placeholder]="'Select'" [data]="dealerCodeList"
+      [(ngModel)]="selectedDealerCodeList" [settings]="singleSelectdropdownSettings"
+      (onSelect)="onSelectOrDeselectDealer($event)" (onDeSelect)="onSelectOrDeselectDealer($event)">
+      </ng-multiselect-dropdown>
+    </div> -->
+    <div class="col-sm-2">
+      <label style="color:transparent">0</label>
+      <button class="btn btn-block btn-success" (click)="getOrderSummary()" [(disabled)]=orderSummaryLoader>Get Order Summary</button>
+    </div>
+  </div>
+
+  <div  class="row mobileShowFont" *ngIf="orderSummaryLoader">
+    <div class="col-xs-12" style="margin: 10px 0px;">
+      <mat-spinner diameter=30 style="margin:0 auto;"></mat-spinner>
+      <h3 class="text-center">Please wait...</h3>
+    </div>
+  </div>
+  <div class="row mobileShowFont">
+    <div class="col-xs-12" style="overflow: auto;margin: 10px 0px;">
+      <ng2-smart-table [settings]="orderSummaryTableSettings" [source]="resultList" (custom)="onCustomAction($event)"></ng2-smart-table>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" *ngIf="viewAddedItems">
+  <div class="row mobileShowFont" style="padding:10px 0px;">
+    <div class="col-xs-4">
+      <span (click)="summaryDetails = !summaryDetails;viewAddedItems = !viewAddedItems"  style="cursor: pointer;">
+       <i class="glyphicon glyphicon-arrow-left"></i> Back
+      </span>
+    </div>
+    <div class="col-xs-8">
+      View - {{viewTransactionId}}
+    </div>
+  </div>
+  <div class="row mobileShowFont">
+    <div class="col-xs-12" style="overflow: auto;margin: 10px 0px;">
+      <ng2-smart-table [settings]="AddedItemsTableSettings" [source]="alreadyExistItemList"  (custom)="onCustomAction($event)"></ng2-smart-table>
+    </div>
+  </div>
+
+  <div class="row mobileShowFont" *ngIf="transactionViewType != 'S'">
+    <div class="col-xs-12">
+      <span class="text-success" (click)="addNewItems();" style="cursor: pointer">
+        <i class="glyphicon glyphicon-plus"></i> Add New Items
+      </span>
+    </div>
+  </div>
+
+  <div class="row mobileShowFont" *ngIf="transactionViewType != 'S'">
+    <div class="col-sm-3">
+      <label style="color:transparent">0</label>
+      <button class="btn btn-block btn-success" (click)="submitItems('park','edit')" *ngIf="!inProgress">Park the order</button>
+      <mat-spinner diameter=30 style="margin:0 auto;" *ngIf="inProgress"></mat-spinner>
+    </div>
+
+    <!-- <div class="col-sm-3">
+      <label style="color:transparent">0</label>
+      <button class="btn btn-block btn-success" (click)="submitItems('place','edit')" *ngIf="!inProgress">Place the order</button>
+      <mat-spinner diameter=30 style="margin:0 auto;" *ngIf="inProgress"></mat-spinner>
+    </div> -->
+  </div>
+</div>
+ 
+<div class="container-fluid mobileShow" *ngIf="editItems">
+  <div class="row mobileShowFont" style="padding:10px 0px;">
+    <div class="col-xs-4">
+      <span (click)="viewAddedItems = !viewAddedItems;editItems = !editItems"  style="cursor: pointer;">
+         <i class="glyphicon glyphicon-arrow-left"></i> Back
+      </span>
+    </div>
+    <div class="col-xs-8">
+      Edit - {{viewTransactionId}} - {{editId}}
+    </div>
+  </div>
+  <div class="row mobileShowFont">
+    <div class="col-xs-12">
+      <div class="col-sm-6">
+        <label style="color:transparent">0</label>
+        <mat-form-field  class="example-full-width">
+          <mat-label>QTY</mat-label>
+          <input matInput placeholder="QTY" [(ngModel)] = "editQuantity" OnlyNumber="true" (input)="isDoAnyChange = false">
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label style="color:transparent">0</label>
+        <button class="btn btn-block btn-success" (click)="saveEditItems()" [(disabled)] = "isDoAnyChange">
+          Save Items
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mobileShow" *ngIf="newAddItems">
+  <div class="row mobileShowFont" style="padding:10px 0px;">
+    <div class="col-xs-4">
+      <span (click)="viewAddedItems = !viewAddedItems;newAddItems = !newAddItems"  style="cursor: pointer;">
+        <i class="glyphicon glyphicon-arrow-left"></i> Back
+      </span>
+    </div>
+    <div class="col-xs-8">
+      Add - {{viewTransactionId}}
+    </div>
+  </div>
+   
+  <mat-accordion>
+    <mat-expansion-panel [expanded]=true >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Order Details
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="row mobileShowFont" >
+        <div class="col-sm-6">
+          <label>Material Desc ~ Catelog Number ~ Material Code : {{materialDescList.length}}</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="materialDescList"
+          [(ngModel)]="selectedMaterialDescList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectMaterialDesc($event)" (onDeSelect)="onSelectOrDeselectMaterialDesc($event)">
+          </ng-multiselect-dropdown>
+        </div>
+        <!-- <div class="col-sm-6">
+          <label>Material Desc</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="materialDescList"
+          [(ngModel)]="selectedMaterialDescList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectMaterialDesc($event)" (onDeSelect)="onSelectOrDeselectMaterialDesc($event)">
+          </ng-multiselect-dropdown>
+        </div> -->
+        <!-- <div class="col-sm-6">
+          <label>Catelog Number</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="catelogNumberList"
+          [(ngModel)]="selectedCatelogNumberList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectCateglogNumber($event)" (onDeSelect)="onSelectOrDeselectCateglogNumber($event)">
+          </ng-multiselect-dropdown>
+        </div> -->
+      </div>
+
+      <!-- <div class="row mobileShowFont"> -->
+        <!-- <div class="col-sm-6">
+          <label>Material Code</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="materialCodeList"
+          [(ngModel)]="selectedMaterialCodeList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectMaterialCode($event)" (onDeSelect)="onSelectOrDeselectMaterialCode($event)">
+          </ng-multiselect-dropdown>
+        </div> -->
+        
+        <!-- <div class="col-sm-6">
+          <label>Division Code</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="divisionCodeList"
+          [(ngModel)]="selectedDivisionCodeList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectDivisionCode($event)" (onDeSelect)="onSelectOrDeselectDivisionCode($event)">
+          </ng-multiselect-dropdown>
+        </div> -->
+      <!-- </div> -->
+      <div class="row mobileShowFont">
+        <div class="col-sm-6">
+          <label style="color:transparent">0</label>
+          <mat-form-field  class="example-full-width">
+            <mat-label>QTY</mat-label>
+            <input matInput placeholder="QTY" [(ngModel)] = "quantity" OnlyNumber="true">
+          </mat-form-field>
+        </div>
+        <div class="col-sm-6">
+          <label style="color:transparent">0</label>
+          <button class="btn btn-block btn-success" (click)="addItems()">
+            Add <span *ngIf="newAddItemsList.length != 0 ">More</span> Items
+          </button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <br>
+  <mat-accordion>
+    <mat-expansion-panel [expanded]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          New Item Details
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="row mobileShowFont">
+        <div class="col-xs-12" style="overflow: auto">
+          <ng2-smart-table [settings]="NewAddItemsTableSettings" [source]="newAddItemsList" (custom)="onCustomAction($event)"></ng2-smart-table>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <br>
+  <div class="row mobileShowFont" style="margin: 0px">
+    <div class="col-sm-6">
+      <label style="color:transparent">0</label>
+      <button class="btn btn-block btn-success" (click)="submitItems('park','add')" *ngIf="!inProgress">Park the order</button>
+      <mat-spinner diameter=30 style="margin:0 auto;" *ngIf="inProgress"></mat-spinner>
+    </div>
+
+    <!-- <div class="col-sm-6">
+      <label style="color:transparent">0</label>
+      <button class="btn btn-block btn-success" (click)="submitItems('place','add')" *ngIf="!inProgress">Place the order</button>
+      <mat-spinner diameter=30 style="margin:0 auto;" *ngIf="inProgress"></mat-spinner>
+    </div> -->
+  </div>
+  <!-- <div class="row" style="margin: 0px">
+    <div class="col-xs-12">
+      <button class="btn btn-block btn-success" (click)="getOtherFieldData()">Tap for get document,plant and payment terms</button>
+    </div>
+  </div> -->
+
+  <!-- <div class="row" style="margin: 0px" *ngIf="loader">
+    <div class="col-xs-12" style="margin: 10px 0px;">
+      <mat-spinner diameter=30 style="margin:0 auto;" [color]="spinnerColor"></mat-spinner>
+    </div>
+  </div> -->
+  <!-- <br> -->
+  <!-- <mat-accordion *ngIf="docPlantPay">
+    <mat-expansion-panel [expanded]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Document,Plant and Payment terms
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-sm-6">
+          <label>Document Type</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="documentTypeList"
+          [(ngModel)]="selectedDocumentTypeList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectDocumentType($event)" (onDeSelect)="onSelectOrDeselectDocumentType($event)">
+          </ng-multiselect-dropdown>
+        </div>
+        <div class="col-sm-6">
+          <label>Plant</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="plantList"
+          [(ngModel)]="selectedPlantList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectPlant($event)" (onDeSelect)="onSelectOrDeselectPlant($event)">
+          </ng-multiselect-dropdown>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <label>Payment Term</label>
+          <ng-multiselect-dropdown [placeholder]="'Select'" [data]="paymentTermList"
+          [(ngModel)]="selectedPaymentTermList" [settings]="singleSelectdropdownSettings"
+          (onSelect)="onSelectOrDeselectPaymentTerm($event)" (onDeSelect)="onSelectOrDeselectPaymentTerm($event)">
+          </ng-multiselect-dropdown>
+        </div>
+
+        <div class="col-sm-3">
+          <label style="color:transparent">0</label>
+          <button class="btn btn-block btn-success" (click)="submitItems('park','add')" *ngIf="!inProgress">Park the order</button>
+          <mat-spinner diameter=30 style="margin:0 auto;" *ngIf="inProgress"></mat-spinner>
+        </div>
+
+        <div class="col-sm-3">
+          <label style="color:transparent">0</label>
+          <button class="btn btn-block btn-success" (click)="submitItems('place','add')" *ngIf="!inProgress">Place the order</button>
+          <mat-spinner diameter=30 style="margin:0 auto;" *ngIf="inProgress"></mat-spinner>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion> -->
+
+
+</div>
+
+
+

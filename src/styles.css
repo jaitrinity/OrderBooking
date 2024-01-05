@@ -1,1 +1,44 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.multiselect-dropdown .dropdown-list{
+    position: relative !important;
+    /* width: auto !important; */
+}
+.material-icons{
+    font-size:27px;cursor: pointer;
+}
+.multiselect-dropdown .selected-item{
+    color: black !important;
+    background: transparent !important;
+    border: transparent !important;
+}
+
+.multiselect-dropdown .selected-item :hover{
+    border: none !important;
+}
+
+.mobileShow {display: none;}
+.desktopShow {display: block;}
+
+mat-tab-header,mat-expansion-panel-header{
+    height: 40px !important;
+}
+.mat-tab-label{
+    height: 35px !important;
+}
+.mobileShow .mobileShowFont{
+    font-size: 11.5px !important; 
+}
+label{
+    margin-bottom: 0px !important;
+}
+
+  /* Smartphone Portrait and Landscape */
+  @media only screen
+    and (min-width : 0px)
+    and (max-width : 600px){ 
+      .mobileShow {display: block;}
+      .desktopShow {display: none;}
+  }

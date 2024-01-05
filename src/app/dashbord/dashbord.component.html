@@ -1,0 +1,236 @@
+<mat-tab-group #tabRef selectedIndex=0>
+  <!-- <mat-tab label="Performance">
+    <div class="row" style="margin: 0px">
+      <div class="col-xs-5 form-group">
+        <label>Territory Code</label>
+        <select class="form-control" [(ngModel)]="performanceSelectedTerritoryCode" (change)="getPerformanceByEmpId()">
+          <option value="">Select</option>
+          <option value="{{tc.paramCode}}" *ngFor="let tc of territoryCodeList">{{tc.paramDesc}}</option>
+        </select>
+      </div>  
+      <div class="col-xs-5 form-group">
+        <label>Period</label>
+        <select class="form-control" [(ngModel)]="period" (change)="getPerformanceByEmpId()">
+          <option value="MTD">MTD</option>
+          <option value="QTD">QTD</option>
+          <option value="YTD">YTD</option>
+        </select>
+      </div>  
+      <div class="col-xs-2">
+        <label style="display: block;color:transparent">0</label>
+        <span (click)="getPerformanceByEmpId()">
+          <i class="material-icons" title="click to get performance">
+            system_update_alt
+          </i>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="performanceLoader" class="text-center">
+      <mat-spinner diameter=30 style="margin:0 auto;" ></mat-spinner>
+      <h3>Please wait some moments. Getting data of <i>Performance</i> is in progress..</h3>
+    </div>
+    <div *ngIf="performanceNoRecord" class="text-danger">
+      <h6>No record found</h6>
+    </div>
+    <div class="row" style="margin: 0px">
+      <div class="col-md-12">
+        <table class="table table-bordered">
+          <tr>
+            <th>Product</th> <th>LY Base</th> <th>TGT</th> 
+            <th>TY Act</th> <th>% Gr</th> <th>% Ach</th>
+          </tr>
+          <tr *ngFor="let per of performance">
+            <td>{{per.product}}</td> <td>{{per.lyBase}}</td> <td>{{per.tgt}}</td> 
+            <td>{{per.tyAct}}</td> <td>{{per.grPercentate}}</td> <td>{{per.achPercentate}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Oustanding">
+    <div class="row" style="margin: 0px 0px 10px 0px">
+      <div class="col-xs-8">
+        <label>Territory Code</label>
+        <select class="form-control" [(ngModel)]="outstandingSelectedTerritoryCode" [disabled]="isDisabled"
+        (change)="getOutstandingByEmpId()">
+          <option value="">Select</option>
+          <option value="{{tc.paramCode}}" *ngFor="let tc of territoryCodeList">{{tc.paramDesc}}</option>
+        </select>
+      </div> 
+
+      <div class="col-xs-2">
+        <label style="display: block;color:transparent">0</label>
+        <span (click)="getOutstandingByEmpId()">
+          <i class="material-icons" title="click to get Oustanding">
+            system_update_alt
+          </i>
+        </span>
+      </div>
+
+      <div class="col-xs-2" *ngIf="isSyncShow">
+        <label style="display: block;color:transparent">0</label>
+        <span (click)="syncOutstanding()" >
+          <i class="material-icons" title="sync outstanding, it may time consuming">sync</i>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="outstandingLoader" class="text-center">
+      <mat-spinner diameter=30 style="margin:0 auto;"></mat-spinner>
+      <h3>Please wait some moments. Getting data of <i>Outstanding</i> is in progress..</h3>
+    </div>
+    <div *ngIf="outstandingNoRecord" class="text-danger">
+      <h6>No record found</h6>
+    </div>
+    <ng2-smart-table [settings]="outstandingSetting" [source]="oustandingList"></ng2-smart-table>
+  </mat-tab>
+  <mat-tab label="Visit Status">
+    <div class="row" style="margin: 0px">
+      <div class="col-md-6 form-group">
+        <label>Territory Code</label>
+        <select class="form-control" [(ngModel)]="visitStatusSelectedTerritoryCode" (change)="getVisitStatusByEmpId()">
+          <option value="">Select</option>
+          <option value="{{tc.paramCode}}" *ngFor="let tc of territoryCodeList">{{tc.paramDesc}}</option>
+        </select>
+      </div> 
+
+      <div class="col-xs-2">
+        <label style="display: block;color:transparent">0</label> 
+        <span (click)="getVisitStatusByEmpId()">
+          <i class="material-icons" title="click to get Visit Status">
+            system_update_alt
+          </i>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="visitStatusLoader" class="text-center">
+      <mat-spinner diameter=30 style="margin:0 auto;"></mat-spinner>
+      <h3>Please wait some moments. Getting data of <i>Visit Status</i> is in progress..</h3>
+    </div>
+    <div *ngIf="visitStatusNoRecord" class="text-danger">
+      <h6>No record found</h6>
+    </div>
+    <table class="table table-bordered">
+      <tr> 
+        <th>Type</th> <th>Class</th> <th>No of Dealer</th> <th>Visit Per Dealer</th> <th>Total Visit</th>
+        <th>No of Visit Done</th> <th>% Adharance</th> <th>Bal to Visit</th> 
+      </tr>
+      <tr *ngFor = "let vs of visitStatusList">
+        <td>{{vs.type}}</td> 
+        <td><span *ngIf="vs.type != 'Grand Total' ">{{vs.classification}}</span></td> 
+        <td><span *ngIf="vs.type != 'Grand Total' ">{{vs.noOfDealer}}</span></td> 
+        <td><span *ngIf="vs.type != 'Grand Total' ">{{vs.visitPerDealer}}</span></td> 
+        <td>{{vs.totalVisit}}</td> 
+        <td>{{vs.noOfVisitDone}}</td> 
+        <td>{{vs.adharancePercentage}} %</td> 
+        <td>{{vs.balOfVisit}}</td> 
+      </tr>
+    </table>
+  </mat-tab>
+  <mat-tab label="Pending Orders">
+    <div class="row" style="margin: 0px">
+      <div class="col-md-6 form-group">
+        <label>Territory Code</label>
+        <select class="form-control" [(ngModel)]="pendingOrdersSelectedTerritoryCode" (change)="getPendingOrderByEmpId()">
+          <option value="">Select</option>
+          <option value="{{tc.paramCode}}" *ngFor="let tc of territoryCodeList">{{tc.paramDesc}}</option>
+        </select>
+      </div> 
+
+      <div class="col-xs-2">
+        <label style="display: block;color:transparent">0</label> 
+        <span (click)="getPendingOrderByEmpId()">
+          <i class="material-icons" title="click to get Pending Order">
+            system_update_alt
+          </i>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="pendingOrdersLoader" class="text-center">
+      <mat-spinner diameter=30 style="margin:0 auto;"></mat-spinner>
+      <h3>Please wait some moments. Getting data of <i>Pending Orders</i> is in progress..</h3>
+    </div>
+    <div *ngIf="pendingOrderNoRecord" class="text-danger">
+      <h6>No record found</h6>
+    </div>
+    <ng2-smart-table [settings]="pendingOrderSetting" [source]="pendingOrderList"></ng2-smart-table>
+  </mat-tab>
+  <mat-tab label="Non Visited Dealer">
+    <div class="row" style="margin: 0px">
+      <div class="col-md-6 form-group">
+        <label>Territory Code</label>
+        <select class="form-control" [(ngModel)]="nonVisitedSelectedTerritoryCode" (change)="getNonVisitedDealerListByEmpId()">
+          <option value="">Select</option>
+          <option value="{{tc.paramCode}}" *ngFor="let tc of territoryCodeList">{{tc.paramDesc}}</option>
+        </select>
+      </div>
+      
+      <div class="col-xs-2">
+        <label style="display: block;color:transparent">0</label> 
+        <span (click)="getNonVisitedDealerListByEmpId()">
+          <i class="material-icons" title="click to get Non Visited Dealer">
+            system_update_alt
+          </i>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="nonVisitDealerLoader" class="text-center">
+      <mat-spinner diameter=30 style="margin:0 auto;"></mat-spinner>
+      <h3>Please wait some moments. Getting data of <i>Non Visited Dealer</i> is in progress..</h3>
+    </div>
+    <div *ngIf="nonVisitNoRecord" class="text-danger">
+      <h6>No record found</h6>
+    </div>
+    <ng2-smart-table [settings]="nonVisitedDealerSetting" [source]="nonVisitedDealerList"></ng2-smart-table>
+  </mat-tab>
+  <mat-tab label="Network Expansion">
+    <div class="row" style="margin: 0px">
+      <div class="col-md-6 form-group">
+        <label>Territory Code</label>
+        <select class="form-control" [(ngModel)]="networkExpansionSelectedTerritoryCode" (change)="getNetworkExpansionByEmpId()">
+          <option value="">Select</option>
+          <option value="{{tc.paramCode}}" *ngFor="let tc of territoryCodeList">{{tc.paramDesc}}</option>
+        </select>
+      </div> 
+
+      <div class="col-xs-2">
+        <label style="display: block;color:transparent">0</label> 
+        <span (click)="getNetworkExpansionByEmpId()">
+          <i class="material-icons" title="click to get Network Expansion">
+            system_update_alt
+          </i>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="networkExpansionLoader" class="text-center">
+      <mat-spinner diameter=30 style="margin:0 auto;"></mat-spinner>
+      <h3>Please wait some moments. Getting data of <i>Network Expansion</i> is in progress..</h3>
+    </div>
+    <div *ngIf="networkExpansionNoRecord" class="text-danger">
+      <h6>No record found</h6>
+    </div>
+    <ng2-smart-table [settings]="networkExpansionSetting" [source]="networkExpansionList"></ng2-smart-table>
+  </mat-tab> -->
+  <mat-tab label="Order Booking">
+    <app-order></app-order>
+  </mat-tab>
+  <mat-tab label="Order Summary">
+    <app-order-summary></app-order-summary>
+  </mat-tab>
+</mat-tab-group>
+<!-- {{tabRef.selectedIndex}} -->
+<!-- 
+  <mat-tab label="Order Summary">
+    <ng-template matTabContent>
+      <app-order-summary></app-order-summary>
+    </ng-template> 
+  </mat-tab> 
+-->
+
+
+
